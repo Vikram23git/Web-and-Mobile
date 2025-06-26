@@ -1,0 +1,804 @@
+<!-- fully functional -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fitness Equipment Shop - Categorized</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #fafafa;
+      color: #2c3e50;
+      margin: 0;
+      padding: 2rem 1rem;
+      line-height: 1.6;
+    }
+
+    header {
+      background-color: #2c3e50;
+      color: white;
+      text-align: center;
+      padding: 1.5rem 0;
+      font-size: clamp(1.5rem, 5vw, 2.5rem);
+      /* Responsive font size */
+      font-weight: 700;
+      border-radius: 8px;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    #searchBar {
+      display: block;
+      margin: 0 auto 2rem auto;
+      max-width: 400px;
+      width: 90%;
+      padding: 0.75rem 1rem;
+      font-size: 1rem;
+      font-weight: 700;
+      font-style: normal;
+      border: 2px solid #f7c873;
+      border-radius: 30px;
+      outline: none;
+      color: #2c3e50;
+      background-color: #fff;
+      box-shadow: 0 2px 8px rgb(247 200 115 / 0.25);
+      text-align: center;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    #searchBar::placeholder {
+      color: #a09a8d;
+    }
+
+    #searchBar:focus {
+      border-color: #a9852a;
+      box-shadow: 0 0 8px #a9852a, 0 0 15px rgba(247, 200, 115, 0.5);
+      /* Enhanced focus effect */
+    }
+
+    .category-section {
+      margin-bottom: 3rem;
+      max-width: 1200px;
+      margin-left: auto;
+      margin-right: auto;
+      padding: 0 1rem;
+      /* Add some padding for smaller screens */
+    }
+
+    .category-section h2 {
+      font-weight: 800;
+      font-size: clamp(1.5rem, 4vw, 2rem);
+      /* Responsive font size */
+      margin-bottom: 1rem;
+      border-bottom: 3px solid #f7c873;
+      padding-bottom: 0.3rem;
+      color: #2c3e50;
+      text-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+    }
+
+    .cards-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      /* More flexible grid */
+      gap: 1.8rem;
+    }
+
+    /* Media queries for specific breakpoints (optional, auto-fit handles most cases) */
+    @media (max-width: 900px) {
+      .cards-container {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 600px) {
+      .cards-container {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card {
+      background-color: #f5f0e6;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(44, 62, 80, 0.15);
+      /* Softer, larger shadow */
+      overflow: hidden;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      /* Ensure cards in a row have equal height */
+    }
+
+    .card:hover {
+      transform: translateY(-10px) scale(1.02);
+      /* More pronounced lift */
+      box-shadow: 0 12px 25px rgba(44, 62, 80, 0.3);
+    }
+
+    .card img {
+      width: 100%;
+      /* height: 200px; Consistent image height */
+      object-fit: cover;
+      border-bottom: 3px solid #f7c873;
+      transition: transform 0.4s ease;
+    }
+
+    .card:hover img {
+      transform: scale(1.1);
+      /* Zoom effect on hover */
+    }
+
+    .card-content {
+      padding: 1.25rem 1.75rem;
+      /* Slightly more padding */
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .card-content h3 {
+      font-weight: 700;
+      font-size: 1.4rem;
+      /* Slightly larger title */
+      margin-bottom: 0.75rem;
+      color: #2c3e50;
+    }
+
+    .card-content p {
+      font-size: 0.95rem;
+      color: #555;
+      flex-grow: 1;
+      margin-bottom: 1.25rem;
+      line-height: 1.4;
+    }
+
+    .card-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: auto;
+      /* Push footer to the bottom of the card-content */
+    }
+
+    .price {
+      font-weight: 800;
+      /* Bolder price */
+      font-size: 1.25rem;
+      color: #2c3e50;
+    }
+
+    .rating {
+      color: #f7c873;
+      font-size: 1.1rem;
+      letter-spacing: 1px;
+      /* Spacing for stars */
+    }
+
+    .reserve-btn {
+      margin-top: 1.25rem;
+      /* Consistent spacing */
+      background-color: #14532d;
+      color: white;
+      border: none;
+      border-radius: 30px;
+      padding: 0.75rem 1.8rem;
+      /* Larger button */
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
+      align-self: flex-start;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .reserve-btn:hover {
+      background-color: #1a7842;
+      /* Lighter green on hover */
+      box-shadow: 0 0 15px rgba(20, 83, 45, 0.6);
+      transform: translateY(-2px);
+    }
+
+    .reserve-btn:active {
+      transform: translateY(0);
+      box-shadow: 0 0 8px rgba(20, 83, 45, 0.4);
+    }
+
+    /* Back to Top Button */
+    #backToTopBtn {
+      display: none;
+      /* Hidden by default */
+      position: fixed;
+      /* Fixed position */
+      bottom: 30px;
+      /* Place the button at the bottom of the page */
+      right: 30px;
+      /* Place the button at the right */
+      z-index: 99;
+      /* Make sure it does not overlap */
+      border: none;
+      /* Remove borders */
+      outline: none;
+      /* Remove outline */
+      background-color: #f7c873;
+      /* Set a background color */
+      color: #2c3e50;
+      /* Text color */
+      cursor: pointer;
+      /* Add a mouse pointer on hover */
+      padding: 15px 20px;
+      /* Some padding */
+      border-radius: 50%;
+      /* Rounded corners */
+      font-size: 1.5rem;
+      /* Increase font size */
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      transition: background-color 0.3s ease, transform 0.3s ease, opacity 0.3s ease;
+      opacity: 0.8;
+      /* Slightly transparent when not hovered */
+    }
+
+    #backToTopBtn:hover {
+      background-color: #a9852a;
+      /* Darker background on hover */ 
+      transform: translateY(-3px) scale(1.05);
+      opacity: 1;
+      /* Fully opaque on hover */
+    }
+
+    /* Footer Styling */
+    footer {
+      text-align: center;
+      margin-top: 3rem;
+      padding: 1.5rem 1rem;
+      background-color: #2c3e50;
+      color: #f5f0e6;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    footer p {
+      margin: 0.5rem 0;
+    }
+
+    /* Horizontal Rule for separation */
+    .footer-hr {
+      border: 0;
+      height: 1px;
+      background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0));
+      margin-top: 3rem;
+    }
+
+    /* Product Detail Section Styles */
+    #productDetailSection {
+      display: none;
+      /* Hidden by default */
+      max-width: 900px;
+      margin: 0 auto 3rem auto;
+      padding: 2rem;
+      background-color: #fff;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    #productDetailSection h2 {
+      font-size: clamp(1.8rem, 5vw, 2.8rem);
+      color: #2c3e50;
+      margin-bottom: 1rem;
+      text-align: center;
+      border-bottom: 3px solid #f7c873;
+      padding-bottom: 0.5rem;
+    }
+
+    #productDetailSection .detail-image-gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 15px;
+      margin-top: 1.5rem;
+      margin-bottom: 2rem;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    #productDetailSection .detail-image-gallery img {
+      width: 100%;
+      /* height: 150px; */
+      object-fit: cover;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease;
+    }
+
+    #productDetailSection .detail-image-gallery img:hover {
+      transform: scale(1.05);
+    }
+
+    #productDetailSection .detail-video-container {
+      position: relative;
+      width: 100%;
+      padding-bottom: 56.25%;
+      /* 16:9 Aspect Ratio */
+      margin-bottom: 2rem;
+      background-color: #eee;
+      /* Placeholder background */
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    #productDetailSection .detail-video-container iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+      border-radius: 8px;
+    }
+
+    #productDetailSection .product-info p {
+      font-size: 1.1rem;
+      margin-bottom: 1.5rem;
+      color: #34495e;
+    }
+
+    #productDetailSection .product-price-rating {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      padding-top: 1rem;
+      border-top: 1px solid #eee;
+    }
+
+    #productDetailSection .product-price-rating .price {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: #14532d;
+    }
+
+    #productDetailSection .product-price-rating .rating {
+      font-size: 1.4rem;
+      color: #f7c873;
+    }
+
+    #reservationForm {
+      background-color: #f8f8f8;
+      padding: 1.5rem;
+      border-radius: 10px;
+      box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.05);
+    }
+
+    #reservationForm h3 {
+      text-align: center;
+      color: #2c3e50;
+      margin-bottom: 1.5rem;
+      font-size: 1.5rem;
+    }
+
+    #reservationForm label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+      color: #34495e;
+    }
+
+    #reservationForm input[type="text"],
+    #reservationForm input[type="email"],
+    #reservationForm input[type="tel"],
+    #reservationForm textarea {
+      width: calc(100% - 20px);
+      /* Adjust for padding */
+      padding: 10px;
+      margin-bottom: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 1rem;
+    }
+
+    #reservationForm textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    #reservationForm button[type="submit"] {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      background-color: #14532d;
+      color: white;
+      border: none;
+      border-radius: 30px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    #reservationForm button[type="submit"]:hover {
+      background-color: #1a7842;
+      box-shadow: 0 4px 10px rgba(20, 83, 45, 0.4);
+    }
+
+    .back-to-products-btn {
+      display: block;
+      margin: 2rem auto 0 auto;
+      background-color: #a09a8d;
+      color: white;
+      border: none;
+      border-radius: 30px;
+      padding: 0.8rem 2rem;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+      text-align: center;
+      max-width: 250px;
+    }
+
+    .back-to-products-btn:hover {
+      background-color: #7a7369;
+      transform: translateY(-2px);
+    }
+
+    
+  </style>
+</head>
+
+<body>
+
+  <header>Fitness Equipment Shop</header>
+
+  <input type="text" id="searchBar" placeholder="Search equipment..." />
+
+  <!-- Main Product Listing Sections -->
+  <div id="mainContent">
+    <!-- Category: Cardio -->
+    <section class="category-section" id="cardioSection">
+      <h2>Cardio</h2>
+      <div class="cards-container">
+        <div class="card" data-category="cardio"
+          data-full-description="The Treadmill X100 offers a spacious running deck and advanced cushioning system for an unparalleled indoor running experience. Featuring multiple pre-set programs, heart rate monitoring, and incline adjustments, it's designed for both casual walkers and serious runners. Its quiet motor and durable build ensure a smooth, long-lasting performance. Ideal for home use."
+          data-additional-images='["images2.0/treadmill1.webp", "images2.0/treadmill2.png"]'
+          data-video-url="https://www.youtube.com/embed/8i3Vrd95o2k?si=2JnXIXVXbw9Bn0ip">
+          <img src="images/treadmills.jpg" alt="Treadmill" />
+          <div class="card-content">
+            <h3>Treadmill X100</h3>
+            <p>Smooth, adjustable running surface for effective indoor cardio workouts, perfect for all fitness levels.
+            </p>
+            <div class="card-footer">
+              <span class="price">$1200</span>
+              <span class="rating">★★★★☆</span>
+            </div>
+            <button class="reserve-btn">View Details & Reserve</button>
+          </div>
+        </div>
+
+        <div class="card" data-category="cardio"
+          data-full-description="The Exercise Bike Pro provides a comfortable and effective low-impact workout, ideal for improving cardiovascular health and strengthening leg muscles. It features adjustable seat and handlebars, multiple resistance levels, and a digital display to track your progress. Its compact design makes it suitable for any home gym."
+          data-additional-images='["images2.0/exercisebike1.webp", "images2.0/exercisebike2.jpg"]'
+          data-video-url="https://www.youtube.com/embed/UuOCJlwkeXA?si=C8A3IWdnV8C8JfOw">
+          <img src="images/gymbike.jpg" alt="Exercise Bike" />
+          <div class="card-content">
+            <h3>Exercise Bike Pro</h3>
+            <p>Low-impact cycling to boost heart health and leg strength, with multiple resistance levels for a
+              personalized ride.</p>
+            <div class="card-footer">
+              <span class="price">$850</span>
+              <span class="rating">★★★★☆</span>
+            </div>
+            <button class="reserve-btn">View Details & Reserve</button>
+          </div>
+        </div>
+
+        <div class="card" data-category="cardio"
+          data-full-description="The Elliptical 2000 offers a fluid, natural motion that provides a full-body cardio workout while being gentle on your joints. Its ergonomic design targets upper and lower body muscles simultaneously, helping you burn calories efficiently and improve overall fitness. Integrated sensors track heart rate for optimized training."
+          data-additional-images='["images2.0/elliptical1.webp", "images2.0/elliptical3.webp"]'
+          data-video-url="https://www.youtube.com/embed/j38LNpTLwzY?si=SdT69XvmC6ZVm6tz">
+          <img src="images/elliptical.jpg" alt="Elliptical" />
+          <div class="card-content">
+            <h3>Elliptical 2000</h3>
+            <p>Full-body cardio with a natural, joint-friendly motion, ideal for a complete workout without strain.</p>
+            <div class="card-footer">
+              <span class="price">$1000</span>
+              <span class="rating">★★★☆☆</span>
+            </div>
+            <button class="reserve-btn">View Details & Reserve</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Category: Strength -->
+    <section class="category-section" id="strengthSection">
+      <h2>Strength</h2>
+      <div class="cards-container">
+        <div class="card" data-category="strength"
+          data-full-description="The Machine Preacher curl is designed to isolate and target your bicep muscles effectively, allowing for controlled and safe resistance training. Its adjustable seat and padded armrests ensure comfort and proper form for users of all sizes, leading to optimal muscle growth and definition."
+          data-additional-images='["images2.0/biceps1.webp", "images2.0/biceps2.webp"]'
+          data-video-url="https://www.youtube.com/embed/R-8Sa0_qiws?si=Aqn9a_10nhbvYoVe">
+          <img src="images/bicepsmachine.jpg" alt="Biceps Machine" />
+          <div class="card-content">
+            <h3>Machine Preacher Curl</h3>
+            <p>Tone and strengthen your arms with controlled resistance, perfect for isolating and building bicep
+              muscle.</p>
+            <div class="card-footer">
+              <span class="price">$300</span>
+              <span class="rating">★★★★★</span>
+            </div>
+            <button class="reserve-btn">View Details & Reserve</button>
+          </div>
+        </div>
+
+        <div class="card" data-category="strength"
+          data-full-description="The Lat Pull Down Pro is a robust machine designed to build powerful upper-body strength and improve posture by effectively targeting the latissimus dorsi muscles. Its smooth cable system and adjustable thigh pads provide a comfortable and secure workout experience, crucial for proper back development."
+          data-additional-images='["images2.0/lats1.jpg", "images2.0/lats2.jpg"]'
+          data-video-url="https://www.youtube.com/embed/SALxEARiMkw?si=HGWtlHUh2pahqsKJ">
+          <img src="images/latpulldown.jpg" alt="Lat Pulldown" />
+          <div class="card-content">
+            <h3>Lat Pull Down Pro</h3>
+            <p>Build upper-body power and improve posture with this versatile machine, targeting your back and arms.</p>
+            <div class="card-footer">
+              <span class="price">$400</span>
+              <span class="rating">★★★★☆</span>
+            </div>
+            <button class="reserve-btn">View Details & Reserve</button>
+          </div>
+        </div>
+
+        <div class="card" data-category="strength"
+          data-full-description="The Leg Press 5000 is a heavy-duty machine engineered for comprehensive leg strength training, focusing on quads, hamstrings, and glutes. Its ergonomic design and adjustable backrest provide optimal support and minimize stress on the lower back, ensuring a safe and effective workout for all users."
+          data-additional-images='["images2.0/legpress.jpg", "images2.0/legpress2.jpg"]'
+          data-video-url="https://www.youtube.com/embed/NsUsWKnFBFY?si=l0ySX8AJXfUmB7CC">
+          <img src="images/legpress.jpg" alt="Leg Press Machine" />
+          <div class="card-content">
+            <h3>Leg Press 5000</h3>
+            <p>Heavy-duty machine for comprehensive leg strength training, designed for safety and maximum muscle
+              engagement.</p>
+            <div class="card-footer">
+              <span class="price">$1500</span>
+              <span class="rating">★★★★☆</span>
+            </div>
+            <button class="reserve-btn">View Details & Reserve</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Category: Functional -->
+    <section class="category-section" id="functionalSection">
+      <h2>Functional</h2>
+      <div class="cards-container">
+        <div class="card" data-category="functional"
+          data-full-description="The Kettlebell Set (5-25kg) offers a versatile range of weights for dynamic, full-body workouts. Ideal for building strength, endurance, and flexibility, kettlebells are perfect for swings, squats, presses, and carries, enhancing functional fitness and improving athletic performance."
+          data-additional-images='["images2.0/kettlebells.jpg", "images2.0/kettlebells2.jpg"]'
+          data-video-url="https://www.youtube.com/embed/UxfX7Z4am1Q?si=SRcaiSMtpgcrxASF">
+          <img src="images/kettlebellsiamges.jpg" alt="Kettlebell" />
+          <div class="card-content">
+            <h3>Kettlebell Set (5-25kg)</h3>
+            <p>Versatile weights for strength, stability, and endurance, ideal for dynamic full-body workouts.</p>
+            <div class="card-footer">
+              <span class="price">$150</span>
+              <span class="rating">★★★★☆</span>
+            </div>
+            <button class="reserve-btn">View Details & Reserve</button>
+          </div>
+        </div>
+
+        <div class="card" data-category="functional"
+          data-full-description="The Cable Crossovers Duo provides multi-angle resistance training, allowing for endless exercise variations to target every muscle group. Its smooth pulleys and adjustable height settings make it perfect for strength training, rehabilitation, and sports-specific movements, suitable for all fitness levels."
+          data-additional-images='["images2.0/cable3.webp", "images2.0/cable2.webp"]'
+          data-video-url="https://www.youtube.com/embed/OW6_KS8MOwU?si=T4mz8iGgRLY2jzJa">
+          <img src="images/CableCrossover.jpg" alt="Cablecrossover" />
+          <div class="card-content">
+            <h3>Cable Crossovers Duo</h3>
+            <p>Multi-angle resistance training for total-body fitness, offering endless exercise variations.</p>
+            <div class="card-footer">
+              <span class="price">$2500</span>
+              <span class="rating">★★★☆☆</span>
+            </div>
+            <button class="reserve-btn">View Details & Reserve</button>
+          </div>
+        </div>
+
+        <div class="card" data-category="functional"
+          data-full-description="The Resistance Bands Set offers lightweight, portable tools for strength and flexibility training, perfect for home workouts, travel, or supplementing gym routines. Available in various resistance levels, they are ideal for warm-ups, cool-downs, and targeting specific muscle groups without heavy weights."
+          data-additional-images='["images2.0/bands.jpg", "images2.0/bands2.jpg"]'
+          data-video-url="https://www.youtube.com/embed/zWveMGgKtC8?si=i1_HM6Z7WuejaE-y">
+          <img src="images/resistancebands.jpg" alt="Resistance Bands" />
+          <div class="card-content">
+            <h3>Resistance Bands Set</h3>
+            <p>Lightweight, portable tools for strength and flexibility, perfect for home workouts or travel.</p>
+            <div class="card-footer">
+              <span class="price">$70</span>
+              <span class="rating">★★★★☆</span>
+            </div>
+            <button class="reserve-btn">View Details & Reserve</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div> <!-- End of mainContent -->
+
+  <hr class="footer-hr">
+  <footer>
+    <p>&copy; 2025 Fitness Equipment Shop. All rights reserved.</p>
+    <p>Contact: <a href="mailto:20067109@mydbs.ie" style="color: #f5f0e6; text-decoration: none;">20067109@mydbs.ie</a>
+    </p>
+  </footer>
+
+  <button id="backToTopBtn" title="Go to top">↑</button>
+
+  <!-- Product Detail Section - Initially Hidden -->
+  <section id="productDetailSection">
+    <h2 id="detailProductName"></h2>
+    <div class="product-info">
+      <p id="detailProductFullDescription"></p>
+      <div class="detail-image-gallery" id="detailImageGallery">
+        <!-- Additional images will be dynamically inserted here -->
+      </div>
+      <div class="detail-video-container" id="detailVideoContainer">
+        <!-- Video will be dynamically inserted here -->
+      </div>
+      <div class="product-price-rating">
+        <span class="price" id="detailProductPrice"></span>
+        <span class="rating" id="detailProductRating"></span>
+      </div>
+    </div>
+
+    <form id="reservationForm">
+      <h3>Reserve This Item</h3>
+      <label for="fullName">Full Name:</label>
+      <input type="text" id="fullName" name="fullName" required>
+
+      <label for="email">Email:</label>
+      <input type="email" id="email" name="email" required>
+
+      <label for="phone">Phone Number:</label>
+      <input type="tel" id="phone" name="phone">
+
+      <label for="message">Your Message (Optional):</label>
+      <textarea id="message" name="message"></textarea>
+
+      <button type="submit">Submit Reservation Request</button>
+    </form>
+
+    <button class="back-to-products-btn" id="backToProductsBtn">← Back to Products</button>
+  </section>
+
+  <script>
+
+    $(function () {
+      const $searchBar = $('#searchBar');
+      const $mainContent = $('#mainContent');
+      const $productDetailSection = $('#productDetailSection');
+      const $backToProductsBtn = $('#backToProductsBtn');
+      const $backToTopButton = $('#backToTopBtn');
+      const $reservationForm = $('#reservationForm');
+
+      // --- Search Bar Functionality ---
+      $searchBar.on('input', function () {
+        const term = $(this).val().toLowerCase();
+        $('.card').each(function () {
+          const title = $(this).find('h3').text().toLowerCase();
+          const desc = $(this).find('p').text().toLowerCase();
+          const match = title.includes(term) || desc.includes(term);
+          $(this).css('display', match ? '' : 'none');
+        });
+
+        $('.category-section').each(function () {
+          const anyVisible = $(this).find('.card').filter(function () {
+            return $(this).css('display') !== 'none';
+          }).length > 0;
+          $(this).css('display', anyVisible ? '' : 'none');
+        });
+      });
+
+      // --- View Details & Reserve Button Functionality ---
+      $('.reserve-btn').on('click', function () {
+        const $card = $(this).closest('.card');
+        const productName = $card.find('h3').text();
+        const productPrice = $card.find('.price').text();
+        const productRating = $card.find('.rating').text();
+        const productFullDescription = $card.attr('data-full-description');
+        const additionalImagesStr = $card.attr('data-additional-images');
+        const videoUrl = $card.attr('data-video-url');
+
+        $('#detailProductName').text(productName);
+        $('#detailProductFullDescription').text(productFullDescription);
+        $('#detailProductPrice').text(productPrice);
+        $('#detailProductRating').text(productRating);
+
+        const $imageGallery = $('#detailImageGallery').empty();
+        const $videoContainer = $('#detailVideoContainer').empty().show();
+
+        if (additionalImagesStr) {
+          try {
+            const additionalImages = JSON.parse(additionalImagesStr);
+            additionalImages.forEach(imageUrl => {
+              $('<img>', {
+                src: imageUrl,
+                alt: `Image of ${productName}`
+              }).appendTo($imageGallery);
+            });
+          } catch (e) {
+            console.error("Error parsing additional images JSON:", e);
+          }
+        }
+
+        if (videoUrl) {
+          $('<iframe>', {
+            src: videoUrl,
+            allowfullscreen: '',
+            frameborder: '0',
+            allow: 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture'
+          }).appendTo($videoContainer);
+        } else {
+          $videoContainer.css('display', 'none');
+        }
+
+        $mainContent.css('display', 'none');
+        $productDetailSection.css('display', 'block');
+        $searchBar.css('display', 'none');
+        $backToTopButton.css('display', 'none');
+
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+
+      // --- Back to Products Button ---
+      $backToProductsBtn.on('click', function () {
+        $productDetailSection.css('display', 'none');
+        $mainContent.css('display', 'block');
+        $searchBar.css('display', 'block');
+
+        const scrollTop = $(window).scrollTop();
+        $backToTopButton.css('display', scrollTop > 200 ? 'block' : 'none');
+
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+
+      // --- Reservation Form ---
+      $reservationForm.on('submit', function (e) {
+        e.preventDefault();
+        const productName = $('#detailProductName').text();
+        const fullName = $('#fullName').val();
+        const email = $('#email').val();
+        const phone = $('#phone').val();
+        const message = $('#message').val();
+
+        console.log('Reservation Details:', { productName, fullName, email, phone, message });
+
+        $reservationForm.html(`
+      <div style="text-align: center; padding: 20px; color: #14532d; font-size: 1.2rem; font-weight: bold;">
+        <p>Thank you, ${fullName}!</p>
+        <p>Your reservation request for "${productName}" has been submitted.</p>
+        <p>We will contact you at ${email} or ${phone || 'your provided number'} shortly.</p>
+      </div>
+    `);
+      });
+
+      // --- Back to Top Button ---
+      $(window).on('scroll', function () {
+        if ($productDetailSection.css('display') !== 'block') {
+          const scrollTop = $(this).scrollTop();
+          $backToTopButton.css('display', scrollTop > 200 ? 'block' : 'none');
+        }
+      });
+
+      $backToTopButton.on('click', function () {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    });
+   
+  </script>
+
+</body>
+
+</html>
